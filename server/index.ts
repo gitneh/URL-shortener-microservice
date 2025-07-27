@@ -47,15 +47,17 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
-})();
+  const port = Number(process.env.PORT);
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port}`);
+    }
+  );
 
 // 🛠️ Middleware global para manejo de errores
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
