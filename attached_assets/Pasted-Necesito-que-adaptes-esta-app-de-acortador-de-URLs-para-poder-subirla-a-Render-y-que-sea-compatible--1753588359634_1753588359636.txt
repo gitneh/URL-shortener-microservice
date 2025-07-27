@@ -1,0 +1,58 @@
+Necesito que adaptes esta app de acortador de URLs para poder subirla a Render y que sea compatible con los tests automáticos de FreeCodeCamp. A continuación te detallo los requerimientos generales y específicos que debés aplicar:
+🎯 Requerimientos Generales:
+
+    Elimina cualquier dependencia que no sea necesaria para un microservicio simple de Express, como React, Tailwind, Radix UI, etc.
+
+    La aplicación debe estar escrita en JavaScript (no TypeScript).
+
+    El código debe estar en un único archivo llamado server.js, ubicado en la raíz del proyecto o en una carpeta server/.
+
+    El servidor Express debe estar configurado para escuchar en el puerto definido por process.env.PORT || 3000.
+
+    Asegurate de que todos los endpoints requeridos por los tests de FreeCodeCamp estén incluidos (ver más abajo).
+
+    El package.json debe tener solo las dependencias necesarias y el script de inicio correcto.
+
+    El proyecto no debe usar ningún paso de compilación (nada de build, dist, ni TypeScript).
+
+    Asegurate de incluir cors para evitar errores de CORS en los tests de FCC.
+
+📦 Contenido correcto del package.json:
+
+{
+  "name": "url-shortener",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dns": "^0.2.2"
+  }
+}
+
+🌐 Endpoints requeridos por FreeCodeCamp:
+
+    GET /api/shorturl/:short_url → Redirige al URL original si existe.
+
+    POST /api/shorturl → Recibe un objeto con propiedad url, valida el dominio usando dns.lookup, guarda el URL y responde con el JSON que tenga original_url y short_url.
+
+📁 Estructura esperada del proyecto:
+
+project-root/
+├── package.json
+├── server.js
+
+✅ Instrucciones adicionales:
+
+    Si el proyecto ya tiene una lógica en TypeScript, convertíla toda a JavaScript.
+
+    Si hay alguna carpeta llamada dist o archivos *.ts, eliminálos.
+
+    No uses ningún sistema de rutas avanzado, sólo usá Express puro.
+
+    No se necesita frontend ni archivos estáticos.
+
+Una vez que hayas hecho todos estos cambios, confirmame que el proyecto está listo para hacer deploy en Render y pasar los tests de FreeCodeCamp.
