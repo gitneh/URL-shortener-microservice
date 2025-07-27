@@ -1,37 +1,45 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+interface UrlEntry {
+  original_url: string;
+  short_url: number;
+}
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createUrl(data: { original_url: string }): Promise<UrlEntry>;
+  getUrlByShortId(shortId: number): Promise<UrlEntry | undefined>;
+  getUrlByOriginal(originalUrl: string): Promise<UrlEntry | undefined>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private urls = new Map<number, UrlEntry>();
+  private urlsByOriginal = new Map<string, UrlEntry>();
+  private nextId = 1;
 
-  constructor() {
-    this.users = new Map();
+  async createUrl({ original_url }: { original_url: string }): Promise<UrlEntry> {
+    // Check if URL already exists
+    const existing = this.urlsByOriginal.get(original_url);
+    if (existing) {
+      return existing;
+    }
+
+    // Create new entry
+    const entry: UrlEntry = {
+      original_url,
+      short_url: this.nextId++
+    };
+
+    // Store in both maps
+    this.urls.set(entry.short_url, entry);
+    this.urlsByOriginal.set(original_url, entry);
+
+    return entry;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getUrlByShortId(shortId: number): Promise<UrlEntry | undefined> {
+    return this.urls.get(shortId);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async getUrlByOriginal(originalUrl: string): Promise<UrlEntry | undefined> {
+    return this.urlsByOriginal.get(originalUrl);
   }
 }
 
