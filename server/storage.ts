@@ -1,46 +1,25 @@
-interface UrlEntry {
+type UrlEntry = {
   original_url: string;
   short_url: number;
-}
+};
 
-export interface IStorage {
-  createUrl(data: { original_url: string }): Promise<UrlEntry>;
-  getUrlByShortId(shortId: number): Promise<UrlEntry | undefined>;
-  getUrlByOriginal(originalUrl: string): Promise<UrlEntry | undefined>;
-}
+const urlDatabase = new Map<number, UrlEntry>();
+let urlCounter = 0;
 
-export class MemStorage implements IStorage {
-  private urls = new Map<number, UrlEntry>();
-  private urlsByOriginal = new Map<string, UrlEntry>();
-  private nextId = 1;
+export const storage = {
+  createUrl({ original_url }: { original_url: string }): UrlEntry {
+    const short_url = ++urlCounter;
 
-  async createUrl({ original_url }: { original_url: string }): Promise<UrlEntry> {
-    // Check if URL already exists
-    const existing = this.urlsByOriginal.get(original_url);
-    if (existing) {
-      return existing;
-    }
-
-    // Create new entry
-    const entry: UrlEntry = {
+    const newEntry: UrlEntry = {
       original_url,
-      short_url: this.nextId++
+      short_url,
     };
 
-    // Store in both maps
-    this.urls.set(entry.short_url, entry);
-    this.urlsByOriginal.set(original_url, entry);
+    urlDatabase.set(short_url, newEntry);
+    return newEntry;
+  },
 
-    return entry;
-  }
-
-  async getUrlByShortId(shortId: number): Promise<UrlEntry | undefined> {
-    return this.urls.get(shortId);
-  }
-
-  async getUrlByOriginal(originalUrl: string): Promise<UrlEntry | undefined> {
-    return this.urlsByOriginal.get(originalUrl);
-  }
-}
-
-export const storage = new MemStorage();
+  getUrlByShortId(short_url: number): UrlEntry | undefined {
+    return urlDatabase.get(short_url);
+  },
+};
